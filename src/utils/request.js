@@ -1,20 +1,28 @@
 import axios from 'axios'
-import { MessageBox, Message } from 'element-ui'
+import {
+  MessageBox,
+  Message
+} from 'element-ui'
 import store from '@/store'
-import { getToken } from '@/utils/auth'
+import {
+  getToken
+} from '@/utils/auth'
+import Qs from 'qs'
 
+axios.defaults.headers.post['content-Type'] = 'appliction/x-www-form-urlencoded'
 // create an axios instance
 const service = axios.create({
   baseURL: process.env.VUE_APP_BASE_API, // url = base url + request url
   // withCredentials: true, // send cookies when cross-domain requests
-  timeout: 5000 // request timeout
+  timeout: 10000 // request timeout
 })
-
 // request interceptor
 service.interceptors.request.use(
   config => {
     // do something before request is sent
-
+    config.paramsSerializer = params => {
+      return Qs.stringify(params)
+    }
     if (store.getters.token) {
       // let each request carry token
       // ['X-Token'] is a custom headers key
@@ -35,7 +43,7 @@ service.interceptors.response.use(
   /**
    * If you want to get http information such as headers or status
    * Please return  response => response
-  */
+   */
 
   /**
    * Determine the request status by custom code
