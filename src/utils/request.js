@@ -14,7 +14,7 @@ axios.defaults.headers.post['content-Type'] = 'appliction/x-www-form-urlencoded'
 const service = axios.create({
   baseURL: process.env.VUE_APP_BASE_API, // url = base url + request url
   // withCredentials: true, // send cookies when cross-domain requests
-  timeout: 10000 // request timeout
+  timeout: 30 * 1000 // request timeout
 })
 // request interceptor
 service.interceptors.request.use(
@@ -52,8 +52,6 @@ service.interceptors.response.use(
    */
   response => {
     const res = response.data
-    res.Code = res.code
-    res.Message = res.message
     // if the custom code is not 20000, it is judged as an error.
     if (res.Code !== 0) {
       Message({

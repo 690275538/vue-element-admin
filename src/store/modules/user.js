@@ -13,7 +13,6 @@ const state = {
 const mutations = {
   SET_TOKEN: (state, token) => {
     state.token = token
-    setToken(token)
   },
   SET_INTRODUCTION: (state, introduction) => {
     state.introduction = introduction
@@ -40,6 +39,7 @@ const actions = {
       }).then(response => {
         const { Data } = response
         commit('SET_TOKEN', Data.access_token)
+        setToken(Data.access_token)
         resolve()
       }).catch(error => {
         reject(error)
@@ -51,24 +51,24 @@ const actions = {
   getInfo({ commit, state }) {
     return new Promise((resolve, reject) => {
       getInfo(state.token).then(response => {
-        const { data } = response
+        const { Data } = response
 
-        if (!data) {
+        if (!Data) {
           reject('Verification failed, please Login again.')
         }
 
-        const { roles, name, avatar, introduction } = data
+        const { Roles, Name, Avatar, Introduction } = Data
 
         // roles must be a non-empty array
-        if (!roles || roles.length <= 0) {
+        if (!Roles || Roles.length <= 0) {
           reject('getInfo: roles must be a non-null array!')
         }
 
-        commit('SET_ROLES', roles)
-        commit('SET_NAME', name)
-        commit('SET_AVATAR', avatar)// 头像
-        commit('SET_INTRODUCTION', introduction)// 介绍
-        resolve(data)
+        commit('SET_ROLES', Roles)
+        commit('SET_NAME', Name)
+        commit('SET_AVATAR', Avatar)// 头像
+        commit('SET_INTRODUCTION', Introduction)// 介绍
+        resolve(Data)
       }).catch(error => {
         reject(error)
       })
