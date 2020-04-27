@@ -13,6 +13,7 @@ const state = {
 const mutations = {
   SET_TOKEN: (state, token) => {
     state.token = token
+    setToken(token)
   },
   SET_INTRODUCTION: (state, introduction) => {
     state.introduction = introduction
@@ -33,17 +34,12 @@ const actions = {
   login({ commit }, userInfo) {
     const { username, password } = userInfo
     return new Promise((resolve, reject) => {
-      // test().then(response => {
-      // console.log(response)
-      // })
-      // return
       login({
         Account: username.trim(),
         Password: password
       }).then(response => {
-        const { data } = response
-        commit('SET_TOKEN', data.token)
-        setToken(data.token)
+        const { Data } = response
+        commit('SET_TOKEN', Data.access_token)
         resolve()
       }).catch(error => {
         reject(error)
@@ -70,8 +66,8 @@ const actions = {
 
         commit('SET_ROLES', roles)
         commit('SET_NAME', name)
-        commit('SET_AVATAR', avatar)
-        commit('SET_INTRODUCTION', introduction)
+        commit('SET_AVATAR', avatar)// 头像
+        commit('SET_INTRODUCTION', introduction)// 介绍
         resolve(data)
       }).catch(error => {
         reject(error)
