@@ -35,14 +35,14 @@ export default [
       // mock error
       if (!token) {
         return {
-          code: 60204,
-          message: 'Account and password are incorrect.'
+          Code: 60204,
+          Message: 'Account and password are incorrect.'
         }
       }
 
       return {
-        code: 0,
-        data: token
+        Code: 0,
+        Data: token
       }
     }
   },
@@ -58,14 +58,14 @@ export default [
       // mock error
       if (!info) {
         return {
-          code: 50008,
-          message: 'Login failed, unable to get user details.'
+          Code: 50008,
+          Message: 'Login failed, unable to get user details.'
         }
       }
 
       return {
-        code: 0,
-        data: info
+        Code: 0,
+        Data: info
       }
     }
   },
@@ -76,8 +76,8 @@ export default [
     type: 'post',
     response: _ => {
       return {
-        code: 0,
-        data: 'success'
+        Code: 0,
+        Data: 'success'
       }
     }
   }

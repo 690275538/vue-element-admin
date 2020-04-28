@@ -42,8 +42,8 @@ export default [
     type: 'get',
     response: _ => {
       return {
-        code: 0,
-        data: routes
+        Code: 0,
+        Data: routes
       }
     }
   },
@@ -54,8 +54,8 @@ export default [
     type: 'get',
     response: _ => {
       return {
-        code: 0,
-        data: roles
+        Code: 0,
+        Data: roles
       }
     }
   },
@@ -65,8 +65,8 @@ export default [
     url: '/vue-element-admin/role',
     type: 'post',
     response: {
-      code: 0,
-      data: {
+      Code: 0,
+      Data: {
         key: Mock.mock('@integer(300, 5000)')
       }
     }
@@ -77,8 +77,8 @@ export default [
     url: '/vue-element-admin/role/[A-Za-z0-9]',
     type: 'put',
     response: {
-      code: 0,
-      data: {
+      Code: 0,
+      Data: {
         status: 'success'
       }
     }
@@ -89,8 +89,8 @@ export default [
     url: '/vue-element-admin/role/[A-Za-z0-9]',
     type: 'delete',
     response: {
-      code: 0,
-      data: {
+      Code: 0,
+      Data: {
         status: 'success'
       }
     }

@@ -22,8 +22,8 @@ export default [
         return !(name && lowerCaseName.indexOf(name.toLowerCase()) < 0)
       })
       return {
-        code: 0,
-        data: { items: mockNameList }
+        Code: 0,
+        Data: { items: mockNameList }
       }
     }
   },
@@ -34,8 +34,8 @@ export default [
     type: 'get',
     response: _ => {
       return {
-        code: 0,
-        data: {
+        Code: 0,
+        Data: {
           total: 20,
           'items|20': [{
             order_no: '@guid()',
