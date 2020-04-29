@@ -35,7 +35,7 @@ const actions = {
     return new Promise((resolve, reject) => {
       login({
         Account: username.trim(),
-        Password: password
+        Password: password.trim()
       }).then(response => {
         const { Data } = response
         commit('SET_TOKEN', Data.access_token)

@@ -1,4 +1,3 @@
-
 const tokens = {
   admin: {
     token: 'admin-token'
@@ -10,16 +9,16 @@ const tokens = {
 
 const users = {
   'admin-token': {
-    roles: ['admin'],
-    introduction: 'I am a super administrator',
-    avatar: 'https://wpimg.wallstcn.com/f778738c-e4f8-4870-b634-56703b4acafe.gif',
-    name: 'Super Admin'
+    Roles: ['admin'],
+    Introduction: 'I am a super administrator',
+    Avatar: 'https://wpimg.wallstcn.com/f778738c-e4f8-4870-b634-56703b4acafe.gif',
+    Name: 'Super Admin'
   },
   'editor-token': {
-    roles: ['editor'],
-    introduction: 'I am an editor',
-    avatar: 'https://wpimg.wallstcn.com/f778738c-e4f8-4870-b634-56703b4acafe.gif',
-    name: 'Normal Editor'
+    Roles: ['editor'],
+    Introduction: 'I am an editor',
+    Avatar: 'https://wpimg.wallstcn.com/f778738c-e4f8-4870-b634-56703b4acafe.gif',
+    Name: 'Normal Editor'
   }
 }
 
@@ -29,20 +28,12 @@ export default [
     url: '/vue-element-admin/user/login',
     type: 'post',
     response: config => {
-      const { username } = config.body
-      const token = tokens[username]
-
-      // mock error
-      if (!token) {
-        return {
-          Code: 60204,
-          Message: 'Account and password are incorrect.'
-        }
-      }
 
       return {
         Code: 0,
-        Data: token
+        Data: {
+          access_token: 'admin-token'
+        }
       }
     }
   },
@@ -52,7 +43,9 @@ export default [
     url: '/vue-element-admin/user/info\.*',
     type: 'get',
     response: config => {
-      const { token } = config.query
+      const {
+        token
+      } = config.query
       const info = users[token]
 
       // mock error

@@ -81,52 +81,8 @@ export const constantRoutes = [{
       affix: true
     }
   }]
-},
-{
-  path: '/documentation',
-  component: Layout,
-  children: [{
-    path: 'index',
-    component: () => import('@/views/documentation/index'),
-    name: 'Documentation',
-    meta: {
-      title: 'Documentation',
-      icon: 'documentation',
-      affix: true
-    }
-  }]
-},
-{
-  path: '/guide',
-  component: Layout,
-  redirect: '/guide/index',
-  children: [{
-    path: 'index',
-    component: () => import('@/views/guide/index'),
-    name: 'Guide',
-    meta: {
-      title: 'Guide',
-      icon: 'guide',
-      noCache: true
-    }
-  }]
-},
-{
-  path: '/profile',
-  component: Layout,
-  redirect: '/profile/index',
-  hidden: true,
-  children: [{
-    path: 'index',
-    component: () => import('@/views/profile/index'),
-    name: 'Profile',
-    meta: {
-      title: 'Profile',
-      icon: 'user',
-      noCache: true
-    }
-  }]
 }
+
 ]
 
 /**
@@ -388,32 +344,6 @@ tableRouter,
     meta: {
       title: 'Theme',
       icon: 'theme'
-    }
-  }]
-},
-
-{
-  path: '/clipboard',
-  component: Layout,
-  children: [{
-    path: 'index',
-    component: () => import('@/views/clipboard/index'),
-    name: 'ClipboardDemo',
-    meta: {
-      title: 'Clipboard',
-      icon: 'clipboard'
-    }
-  }]
-},
-
-{
-  path: 'external-link',
-  component: Layout,
-  children: [{
-    path: 'https://github.com/PanJiaChen/vue-element-admin',
-    meta: {
-      title: 'External Link',
-      icon: 'link'
     }
   }]
 },
