@@ -33,14 +33,14 @@ module.exports = {
   devServer: {
     //如果你的前端应用和后端 API 服务器没有运行在同一个主机上，你需要在开发环境下将 API 请求代理到 API 服务器。这个问题可以通过 vue.config.js 中的 devServer.proxy 选项来配置
     //这会告诉开发服务器将任何未知请求 (没有匹配到静态文件的请求) 代理到http://localhost:5000
-    // proxy: {
-    //   "/api": {
-    //     target: 'http://localhost:5100', //请求到 /api/users 现在会被代理到请求 http://localhost:3000/api/users。
-    //     // pathRewrite: { "^/api": "" },//如果你不想始终传递 /api ，则需要重写路径
-    //     changeOrigin: true, //changes the origin of the host header to the target URL
-    //     secure: false //默认情况下，不接受运行在 HTTPS 上，且使用了无效证书的后端服务器。如果你想要接受，修改配置
-    //   }
-    // },
+    proxy: {
+      "/api": {
+        target: 'http://localhost:5100', //请求到 /api/users 现在会被代理到请求 http://localhost:3000/api/users。
+        // pathRewrite: { "^/api": "" },//如果你不想始终传递 /api ，则需要重写路径
+        changeOrigin: true, //changes the origin of the host header to the target URL
+        secure: false //默认情况下，不接受运行在 HTTPS 上，且使用了无效证书的后端服务器。如果你想要接受，修改配置
+      }
+    },
     port: port,
     open: true,
     overlay: {
