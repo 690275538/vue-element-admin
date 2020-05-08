@@ -39,7 +39,7 @@ const actions = {
       }).then(response => {
         const { Data } = response
         commit('SET_TOKEN', Data.access_token)
-        setToken(Data.access_token)
+        setToken(Data.access_token, { expires: new Date(Data.expires_at) }) // new Date(毫秒数)
         resolve()
       }).catch(error => {
         reject(error)
