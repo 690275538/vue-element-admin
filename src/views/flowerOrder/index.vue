@@ -96,19 +96,10 @@
       <el-table-column label="盈利金额" prop="ProfitPrice" />
       <el-table-column label="自付金额" prop="SelfPay" />
       <el-table-column label="备注" prop="Remak" />
-      <el-table-column
-        label="操作"
-        align="center"
-        width="230"
-        class-name="small-padding fixed-width"
-      >
+      <el-table-column label="操作" align="center" width="230" class-name="small-padding fixed-width">
         <template slot-scope="{row,$index}">
           <el-button type="primary" size="mini" @click="handleUpdate(row)">编辑</el-button>
-          <el-button
-            size="mini"
-            type="danger"
-            @click="handleDelete(row,$index)"
-          >Delete</el-button>
+          <el-button size="mini" type="danger" @click="handleDelete(row,$index)">Delete</el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -125,13 +116,28 @@
       <el-form
         ref="dataForm"
         :rules="rules"
-        :model="order"
+        :model="formTemp"
         label-position="left"
         label-width="70px"
         style="width: 400px; margin-left:50px;"
       >
-        <el-form-item label="Type" prop="type">
-          <el-select v-model="order.type" class="filter-item" placeholder="Please select">
+        <el-form-item label="创建日期" prop="CreateDate">
+          <el-date-picker v-model="formTemp.CreateDate" type="datetime" placeholder="创建日期" />
+        </el-form-item>
+        <el-form-item label="客户账号" prop="CustomerAccount">
+          <el-input v-model="formTemp.CustomerAccount" />
+        </el-form-item>
+        <el-form-item label="商品名称" prop="ProductName">
+          <el-input v-model="formTemp.ProductName" />
+        </el-form-item>
+        <el-form-item label="合作商名称" prop="PartnerName">
+          <el-input v-model="formTemp.PartnerName" />
+        </el-form-item>
+        <el-form-item label="合作商地址" prop="PartnerAddress">
+          <el-input v-model="formTemp.PartnerAddress" />
+        </el-form-item>
+        <el-form-item label="与合作商聊天工具" prop="PartnerChatTool">
+          <el-select v-model="formTemp.PartnerChatTool" class="filter-item" placeholder="请选择聊天工具">
             <el-option
               v-for="item in calendarTypeOptions"
               :key="item.key"
@@ -140,37 +146,31 @@
             />
           </el-select>
         </el-form-item>
-        <el-form-item label="Date" prop="timestamp">
-          <el-date-picker
-            v-model="order.timestamp"
-            type="datetime"
-            placeholder="Please pick a date"
-          />
+        <el-form-item label="销售价格" prop="SellingPrice">
+          <el-input v-model="formTemp.SellingPrice" />
         </el-form-item>
-        <el-form-item label="Title" prop="title">
-          <el-input v-model="order.title" />
+        <el-form-item label="转出金额" prop="DistractPrice">
+          <el-input v-model="formTemp.DistractPrice" />
         </el-form-item>
-        <el-form-item label="Status">
-          <el-select v-model="order.status" class="filter-item" placeholder="Please select">
-            <el-option v-for="item in statusOptions" :key="item" :label="item" :value="item" />
-          </el-select>
+        <el-form-item label="盈利金额" prop="ProfitPrice">
+          <el-input v-model="formTemp.ProfitPrice" />
         </el-form-item>
-        <el-form-item label="Imp">
-          <el-rate
-            v-model="order.importance"
-            :colors="['#99A9BF', '#F7BA2A', '#FF9900']"
-            :max="3"
-            style="margin-top:8px;"
-          />
+        <el-form-item label="自付金额" prop="SelfPay">
+          <el-input v-model="formTemp.SelfPay" />
         </el-form-item>
-        <el-form-item label="Remark">
-          <el-input
-            v-model="order.remark"
-            :autosize="{ minRows: 2, maxRows: 4}"
-            type="textarea"
-            placeholder="Please input"
-          />
-        </el-form-item>
+        <el-table-column label="备注" width="120px" align="left">
+          <template slot-scope="scope">
+            <el-tooltip :disabled="scope.row.Remarks==null||scope.row.Remarks==''" placement="top">
+              <div slot="content">{{ scope.row.Remarks }}</div>
+              <el-button
+                :type="scope.row.Remarks?'danger':'primary'"
+                style="padding: 5px 7px;"
+                size="mini"
+                @click="edit_remark(scope.row,scope.row.Remarks)"
+              >注</el-button>
+            </el-tooltip>
+          </template>
+        </el-table-column>
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button @click="dialogFormVisible = false">Cancel</el-button>
@@ -247,14 +247,25 @@ export default {
         { label: 'ID Descending', key: '-id' }
       ],
       statusOptions: ['published', 'draft', 'deleted'],
-      order: {
-        id: undefined,
-        importance: 1,
-        remark: '',
-        timestamp: new Date(),
-        title: '',
-        type: '',
-        status: 'published'
+      formTemp: {
+        Order: {
+          CustomerAccount: '',
+          CustomerAddress: '',
+
+          ProductName: '',
+
+          PartnerName: '',
+          PartnerAddress: '',
+          PartnerChatTool: 0,
+
+          CreateDate: new Date(),
+          DeliveryAddress: '',
+          SellingPrice: 0,
+          DistractPrice: 0,
+          ProfitPrice: 0,
+          SelfPay: 0,
+          Remak: ''
+        }
       },
       dialogFormVisible: false,
       dialogStatus: '',
@@ -318,14 +329,23 @@ export default {
       this.handleFilter()
     },
     resetOrder() {
-      this.order = {
-        id: undefined,
-        importance: 1,
-        remark: '',
-        timestamp: new Date(),
-        title: '',
-        status: 'published',
-        type: ''
+      this.formTemp = {
+        CustomerAccount: '',
+        CustomerAddress: '',
+
+        ProductName: '',
+
+        PartnerName: '',
+        PartnerAddress: '',
+        PartnerChatTool: 0,
+
+        CreateDate: new Date(),
+        DeliveryAddress: '',
+        SellingPrice: 0,
+        DistractPrice: 0,
+        ProfitPrice: 0,
+        SelfPay: 0,
+        Remak: ''
       }
     },
     handleCreate() {
@@ -336,13 +356,48 @@ export default {
         this.$refs['dataForm'].clearValidate()
       })
     },
+    edit_remark(row, remark) {
+      this.isCancelOrder = false
+      this.dialogRemarksFormTitle = '修改备注'
+      this.crtRow = row
+      this.crtRemark = remark
+      this.dialogRemarksFormVisible = true
+    },
+    resetRemark() {
+      this.crtRemark = ''
+      this.dialogRemarksFormVisible = false
+    },
+    saveRemark() {
+      if (this.isCancelOrder) {
+        check_in_cancel_order(this.crtRow.Id, this.crtRemark).then(response => {
+          if (response.data.Status == true) {
+            this.$message.success(response.data.Message)
+            this.crtRow.Remarks = response.data.Result.Remarks
+            this.inquire()
+          } else {
+            this.$message.error(response.data.Message)
+          }
+        })
+      } else {
+        check_in_edit_remark(this.crtRow.Id, this.crtRemark).then(response => {
+          if (response.data.Status == true) {
+            this.$message.success(response.data.Message)
+            this.crtRow.Remarks = response.data.Result.Remarks
+          } else {
+            this.$message.error(response.data.Message)
+          }
+        })
+      }
+
+      this.dialogRemarksFormVisible = false
+    },
     createData() {
       this.$refs['dataForm'].validate(valid => {
         if (valid) {
-          this.order.id = parseInt(Math.random() * 100) + 1024 // mock a id
-          this.order.author = 'vue-element-admin'
-          createArticle(this.order).then(() => {
-            this.list.unshift(this.order)
+          this.formTemp.id = parseInt(Math.random() * 100) + 1024 // mock a id
+          this.formTemp.author = 'vue-element-admin'
+          createArticle(this.formTemp).then(() => {
+            this.list.unshift(this.formTemp)
             this.dialogFormVisible = false
             this.$notify({
               title: 'Success',
@@ -355,8 +410,8 @@ export default {
       })
     },
     handleUpdate(row) {
-      this.order = Object.assign({}, row) // copy obj
-      this.order.timestamp = new Date(this.order.timestamp)
+      this.formTemp = Object.assign({}, row) // copy obj
+      this.formTemp.timestamp = new Date(this.formTemp.timestamp)
       this.dialogStatus = 'update'
       this.dialogFormVisible = true
       this.$nextTick(() => {
@@ -366,11 +421,11 @@ export default {
     updateData() {
       this.$refs['dataForm'].validate(valid => {
         if (valid) {
-          const tempData = Object.assign({}, this.order)
+          const tempData = Object.assign({}, this.formTemp)
           tempData.timestamp = +new Date(tempData.timestamp) // change Thu Nov 30 2017 16:41:05 GMT+0800 (CST) to 1512031311464
           updateArticle(tempData).then(() => {
-            const index = this.list.findIndex(v => v.id === this.order.id)
-            this.list.splice(index, 1, this.order)
+            const index = this.list.findIndex(v => v.id === this.formTemp.id)
+            this.list.splice(index, 1, this.formTemp)
             this.dialogFormVisible = false
             this.$notify({
               title: 'Success',
