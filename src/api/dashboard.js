@@ -1,8 +1,15 @@
 import request from '@/utils/request'
 
-export function testApi() {
+export function totalCount() {
   return request({
-    url: '/weatherforecast',
+    url: '/home/TotalCount',
+    method: 'get'
+  })
+}
+
+export function lineData() {
+  return request({
+    url: '/home/LineData',
     method: 'get'
   })
 }

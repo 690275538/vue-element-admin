@@ -37,7 +37,7 @@ export default [
         Code: 0,
         Data: {
           total: 20,
-          'items|20': [{
+          items: [{
             order_no: '@guid()',
             timestamp: +Mock.Random.date('T'),
             username: '@name()',

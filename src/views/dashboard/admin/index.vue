@@ -1,7 +1,5 @@
 <template>
   <div class="dashboard-editor-container">
-    <github-corner class="github-corner" />
-    <el-button type="primary" @click="testRequest">测试</el-button>
     <panel-group @handleSetLineChartData="handleSetLineChartData" />
 
     <el-row style="background:#fff;padding:16px 16px 0;margin-bottom:32px;">
@@ -62,7 +60,6 @@
 </template>
 
 <script>
-import GithubCorner from '@/components/GithubCorner'
 import PanelGroup from './components/PanelGroup'
 import LineChart from './components/LineChart'
 import RaddarChart from './components/RaddarChart'
@@ -72,31 +69,11 @@ import TransactionTable from './components/TransactionTable'
 import TodoList from './components/TodoList'
 import BoxCard from './components/BoxCard'
 
-import { testApi } from '@/api/dashboard'
-
-const lineChartData = {
-  newVisitis: {
-    expectedData: [100, 120, 161, 134, 105, 160, 165],
-    actualData: [120, 82, 91, 154, 162, 140, 145]
-  },
-  messages: {
-    expectedData: [200, 192, 120, 144, 160, 130, 140],
-    actualData: [180, 160, 151, 106, 145, 150, 130]
-  },
-  purchases: {
-    expectedData: [80, 100, 121, 104, 105, 90, 100],
-    actualData: [120, 90, 100, 138, 142, 130, 130]
-  },
-  shoppings: {
-    expectedData: [130, 140, 141, 142, 145, 150, 160],
-    actualData: [120, 82, 91, 154, 162, 140, 130]
-  }
-}
+import { lineData } from '@/api/dashboard'
 
 export default {
   name: 'DashboardAdmin',
   components: {
-    GithubCorner,
     PanelGroup,
     LineChart,
     RaddarChart,
@@ -108,18 +85,41 @@ export default {
   },
   data() {
     return {
-      lineChartData: lineChartData.newVisitis
+      lineChartDatas: {
+        customerCount: {
+          expectedData: [100, 120, 161, 134, 105, 160, 165],
+          actualData: [120, 82, 91, 154, 162, 140, 145]
+        },
+        sellingPriceCount: {
+          expectedData: [200, 192, 120, 144, 160, 130, 140],
+          actualData: [180, 160, 151, 106, 145, 150, 130]
+        },
+        profitPriceCount: {
+          expectedData: [80, 100, 121, 104, 105, 90, 100],
+          actualData: [120, 90, 100, 138, 142, 130, 130]
+        },
+        orderCount: {
+          expectedData: [130, 140, 141, 142, 145, 150, 160],
+          actualData: [120, 82, 91, 154, 162, 140, 130]
+        }
+      },
+      lineChartData: { expectedData: [], actualData: [] }
     }
   },
+  created() {
+    this.getLineChartData()
+  },
   methods: {
-    handleSetLineChartData(type) {
-      this.lineChartData = lineChartData[type]
+    getLineChartData() {
+      lineData().then(response => {
+        if (response.Code == 0) {
+          this.lineChartDatas = response.Data
+          this.lineChartData = this.lineChartDatas.profitPriceCount
+        }
+      })
     },
-    testRequest() {
-      testApi()
-        .then(response => {
-          console.log('testRequest request: ' + response)
-        })
+    handleSetLineChartData(type) {
+      this.lineChartData = this.lineChartDatas[type]
     }
   }
 }
