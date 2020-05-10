@@ -5,7 +5,7 @@ import Layout from '@/layout'
 const orderRouter = {
   path: '/order',
   component: Layout,
-  redirect: 'noRedirect',
+  redirect: '/order/flowerOrder',
   name: 'Order',
   meta: {
     title: 'Order',

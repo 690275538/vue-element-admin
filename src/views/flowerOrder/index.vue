@@ -2,48 +2,29 @@
   <div class="app-container">
     <div class="filter-container">
       <el-input
-        v-model="listQuery.title"
-        placeholder="Title"
+        v-model="listQuery.CustomerAccount"
+        placeholder="客户账号"
         style="width: 200px;"
         class="filter-item"
         @keyup.enter.native="handleFilter"
       />
-      <el-select
-        v-model="listQuery.importance"
-        placeholder="Imp"
-        clearable
-        style="width: 90px"
+      <el-input
+        v-model="listQuery.CustomerAddress"
+        placeholder="客户地址"
+        style="width: 200px;"
         class="filter-item"
-      >
-        <el-option v-for="item in importanceOptions" :key="item" :label="item" :value="item" />
-      </el-select>
-      <el-select
-        v-model="listQuery.type"
-        placeholder="Type"
-        clearable
-        class="filter-item"
-        style="width: 130px"
-      >
-        <el-option
-          v-for="item in calendarTypeOptions"
-          :key="item.key"
-          :label="item.display_name+'('+item.key+')'"
-          :value="item.key"
-        />
-      </el-select>
-      <el-select
-        v-model="listQuery.sort"
-        style="width: 140px"
-        class="filter-item"
-        @change="handleFilter"
-      >
-        <el-option
-          v-for="item in sortOptions"
-          :key="item.key"
-          :label="item.label"
-          :value="item.key"
-        />
-      </el-select>
+        @keyup.enter.native="handleFilter"
+      />
+      <el-date-picker
+        v-model="listQuery.DateTimeRange"
+        type="daterange"
+        align="right"
+        unlink-panels
+        range-separator="至"
+        start-placeholder="开始日期"
+        end-placeholder="结束日期"
+        :picker-options="pickerOptions"
+      ></el-date-picker>
       <el-button
         v-waves
         class="filter-item"
@@ -70,45 +51,51 @@
       style="width: 100%;"
       @sort-change="sortChange"
     >
-      <el-table-column
-        label="ID"
-        prop="id"
-        sortable="custom"
-        align="center"
-        width="80"
-        :class-name="getSortClass('id')"
-      >
+      <el-table-column label="序号" type="index" align="center" width="50"></el-table-column>
+      <el-table-column label="客户账号" prop="CustomerAccount" />
+      <el-table-column label="创建时间" width="120" align="center">
         <template slot-scope="{row}">
-          <span>{{ row.id }}</span>
+          <span>{{ row.CreateDate | parseTime('{y}-{m}-{d}') }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="创建时间" width="150px" align="center">
+      <el-table-column label="产品名称" prop="ProductName" />
+      <el-table-column label="合作商" prop="PartnerName" />
+      <el-table-column label="合作商地址" prop="PartnerAddress" />
+      <el-table-column label="合作商聊天工具" prop="PartnerChatTool" width="120">
         <template slot-scope="{row}">
-          <span>{{ row.CreateDate | parseTime('{y}-{m}-{d} {h}:{i}') }}</span>
+          <span>{{ row.PartnerChatTool | chatToolFilter }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="客户账号" prop="CustomerId" />
-      <el-table-column label="产品id" prop="ProductId" />
-      <el-table-column label="配送地址" prop="DeliveryAddress" />
-      <el-table-column label="合作商id" prop="PartnerId" />
-      <el-table-column label="销售金额" prop="SellingPrice" />
-      <el-table-column label="转出金额" prop="DistractPrice" />
-      <el-table-column label="盈利金额" prop="ProfitPrice" />
-      <el-table-column label="自付金额" prop="SelfPay" />
-      <el-table-column label="备注" prop="Remak" />
-      <el-table-column label="操作" align="center" width="230" class-name="small-padding fixed-width">
+      <el-table-column label="销售金额" prop="SellingPrice" align="center" width="80" />
+      <el-table-column label="转出金额" prop="DistractPrice" align="center" width="80" />
+      <el-table-column label="盈利金额" prop="ProfitPrice" align="center" width="80" />
+      <el-table-column label="自付金额" prop="SelfPay" align="center" width="80" />
+      <el-table-column label="备注" width="50px" align="left">
+        <template slot-scope="{row}">
+          <el-tooltip :disabled="row.Remark==null||row.Remark==''" placement="top">
+            <div slot="content">{{ row.Remark }}</div>
+            <el-button
+              :type="row.Remark?'danger':'primary'"
+              style="padding: 5px 7px;"
+              size="mini"
+              @click="edit_remark(row,row.Remark)"
+            >注</el-button>
+          </el-tooltip>
+        </template>
+      </el-table-column>
+      <el-table-column label="操作" align="center" width="200" class-name="small-padding fixed-width">
         <template slot-scope="{row,$index}">
           <el-button type="primary" size="mini" @click="handleUpdate(row)">编辑</el-button>
-          <el-button size="mini" type="danger" @click="handleDelete(row,$index)">Delete</el-button>
+          <el-button size="mini" type="danger" @click="handleDelete(row,$index)">删除</el-button>
         </template>
       </el-table-column>
     </el-table>
 
     <pagination
-      v-show="total>0"
-      :total="total"
-      :page.sync="listQuery.page"
-      :limit.sync="listQuery.limit"
+      v-show="listQuery.PageModel.PageCount>0"
+      :total="listQuery.PageModel.PageCount"
+      :page.sync="listQuery.PageModel.PageIndex"
+      :limit.sync="listQuery.PageModel.PageSize"
       @pagination="getList"
     />
 
@@ -116,13 +103,19 @@
       <el-form
         ref="dataForm"
         :rules="rules"
+        :inline="true"
         :model="formTemp"
-        label-position="left"
-        label-width="70px"
-        style="width: 400px; margin-left:50px;"
+        label-width="150px"
+        width="50%"
       >
         <el-form-item label="创建日期" prop="CreateDate">
-          <el-date-picker v-model="formTemp.CreateDate" type="datetime" placeholder="创建日期" />
+          <el-date-picker
+            v-model="formTemp.CreateDate"
+            type="datetime"
+            format="yyyy-MM-dd HH:mm"
+            placeholder="创建日期"
+            style="width: 185px;"
+          />
         </el-form-item>
         <el-form-item label="客户账号" prop="CustomerAccount">
           <el-input v-model="formTemp.CustomerAccount" />
@@ -137,12 +130,18 @@
           <el-input v-model="formTemp.PartnerAddress" />
         </el-form-item>
         <el-form-item label="与合作商聊天工具" prop="PartnerChatTool">
-          <el-select v-model="formTemp.PartnerChatTool" class="filter-item" placeholder="请选择聊天工具">
+          <el-select
+            v-model="formTemp.PartnerChatTool"
+            class="filter-item"
+            placeholder="请选择聊天工具"
+            style="width: 185px;"
+          >
+            <el-option label="请选择聊天工具" :value="0" />
             <el-option
-              v-for="item in calendarTypeOptions"
-              :key="item.key"
-              :label="item.display_name"
-              :value="item.key"
+              v-for="item in chatToolOptions"
+              :key="item.Key"
+              :label="item.Value"
+              :value="item.Key"
             />
           </el-select>
         </el-form-item>
@@ -158,95 +157,112 @@
         <el-form-item label="自付金额" prop="SelfPay">
           <el-input v-model="formTemp.SelfPay" />
         </el-form-item>
-        <el-table-column label="备注" width="120px" align="left">
-          <template slot-scope="scope">
-            <el-tooltip :disabled="scope.row.Remarks==null||scope.row.Remarks==''" placement="top">
-              <div slot="content">{{ scope.row.Remarks }}</div>
-              <el-button
-                :type="scope.row.Remarks?'danger':'primary'"
-                style="padding: 5px 7px;"
-                size="mini"
-                @click="edit_remark(scope.row,scope.row.Remarks)"
-              >注</el-button>
-            </el-tooltip>
-          </template>
-        </el-table-column>
+        <el-form-item label="备注" prop="Remark">
+          <el-input v-model="formTemp.Remark" type="textarea" :rows="2" />
+        </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
-        <el-button @click="dialogFormVisible = false">Cancel</el-button>
-        <el-button type="primary" @click="dialogStatus==='create'?createData():updateData()">Confirm</el-button>
+        <el-button @click="dialogFormVisible = false">取消</el-button>
+        <el-button type="primary" @click="dialogStatus==='create'?createData():updateData()">提交</el-button>
       </div>
     </el-dialog>
 
-    <el-dialog :visible.sync="dialogPvVisible" title="Reading statistics">
-      <el-table :data="pvData" border fit highlight-current-row style="width: 100%">
-        <el-table-column prop="key" label="Channel" />
-        <el-table-column prop="pv" label="Pv" />
-      </el-table>
+    <el-dialog :visible.sync="dialogRemarksFormVisible" title="修改备注" width="30%">
+      <el-input v-model="crtRemark" type="textarea" :rows="2" />
       <span slot="footer" class="dialog-footer">
-        <el-button type="primary" @click="dialogPvVisible = false">Confirm</el-button>
+        <el-button @click="dialogRemarksFormVisible = false">取消</el-button>
+        <el-button type="primary" @click="saveRemark()">提交</el-button>
       </span>
     </el-dialog>
   </div>
 </template>
 
 <script>
-import flowerOrder from '@/api/flowerOrder'
+import { add, edit, list, del, updateRemark, single } from '@/api/flowerOrder'
 import waves from '@/directive/waves' // waves directive
 import { parseTime } from '@/utils'
 import Pagination from '@/components/Pagination' // secondary package based on el-pagination
 
-const calendarTypeOptions = [
-  { key: 'CN', display_name: 'China' },
-  { key: 'US', display_name: 'USA' },
-  { key: 'JP', display_name: 'Japan' },
-  { key: 'EU', display_name: 'Eurozone' }
-]
+const pickerOptions = {
+  shortcuts: [
+    {
+      text: '最近一周',
+      onClick(picker) {
+        const end = new Date()
+        const start = new Date()
+        start.setTime(start.getTime() - 3600 * 1000 * 24 * 7)
+        picker.$emit('pick', [start, end])
+      }
+    },
+    {
+      text: '最近一个月',
+      onClick(picker) {
+        const end = new Date()
+        const start = new Date()
+        start.setTime(start.getTime() - 3600 * 1000 * 24 * 30)
+        picker.$emit('pick', [start, end])
+      }
+    },
+    {
+      text: '最近三个月',
+      onClick(picker) {
+        const end = new Date()
+        const start = new Date()
+        start.setTime(start.getTime() - 3600 * 1000 * 24 * 90)
+        picker.$emit('pick', [start, end])
+      }
+    }
+  ]
+}
 
-// arr to obj, such as { CN : "China", US : "USA" }
-const calendarTypeKeyValue = calendarTypeOptions.reduce((acc, cur) => {
-  acc[cur.key] = cur.display_name
-  return acc
-}, {})
+const chatToolOptions = [
+  {
+    Key: 1,
+    Value: 'QQ'
+  },
+  {
+    Key: 2,
+    Value: 'Wechat'
+  }
+]
 
 export default {
   name: 'FlowerOrder',
   components: { Pagination },
   directives: { waves },
   filters: {
-    statusFilter(status) {
-      const statusMap = {
-        published: 'success',
-        draft: 'info',
-        deleted: 'danger'
-      }
-      return statusMap[status]
-    },
-    typeFilter(type) {
-      return calendarTypeKeyValue[type]
+    chatToolFilter(key) {
+      const item = chatToolOptions.find(d => d.Key == key)
+      if (item) return item.Value
+      return ''
     }
   },
   data() {
     return {
       tableKey: 0,
       list: null,
-      total: 0,
-      listLoading: true,
+      listLoading: false,
+      pickerOptions,
+      chatToolOptions,
       listQuery: {
-        page: 1,
-        limit: 20,
-        importance: undefined,
-        title: undefined,
-        type: undefined,
-        sort: '+id'
+        StartDateTime: undefined,
+        EndDateTime: undefined,
+        DateTimeRange: [],
+        PageModel: {
+          PageIndex: 0,
+          PageSize: 10,
+          PageCount: 0
+        },
+        CustomerAccount: '',
+        CustomerAddress: '',
+
+        SortFileds: 'Id',
+        IsAsc: true
       },
-      importanceOptions: [1, 2, 3],
-      calendarTypeOptions,
       sortOptions: [
         { label: 'ID Ascending', key: '+id' },
         { label: 'ID Descending', key: '-id' }
       ],
-      statusOptions: ['published', 'draft', 'deleted'],
       formTemp: {
         Order: {
           CustomerAccount: '',
@@ -264,17 +280,18 @@ export default {
           DistractPrice: 0,
           ProfitPrice: 0,
           SelfPay: 0,
-          Remak: ''
+          Remark: ''
         }
       },
       dialogFormVisible: false,
+      dialogRemarksFormVisible: false,
       dialogStatus: '',
+      crtRemark: '',
+      crtRow: undefined,
       textMap: {
-        update: 'Edit',
-        create: 'Create'
+        update: '编辑',
+        create: '添加'
       },
-      dialogPvVisible: false,
-      pvData: [],
       rules: {
         type: [
           { required: true, message: 'type is required', trigger: 'change' }
@@ -290,8 +307,7 @@ export default {
         title: [
           { required: true, message: 'title is required', trigger: 'blur' }
         ]
-      },
-      downloadLoading: false
+      }
     }
   },
   created() {
@@ -300,38 +316,41 @@ export default {
   methods: {
     getList() {
       this.listLoading = true
-      fetchList(this.listQuery).then(response => {
-        this.list = response.data.items
-        this.total = response.data.total
+      if (
+        this.listQuery.DateTimeRange &&
+        this.listQuery.DateTimeRange.length == 2
+      ) {
+        this.listQuery.StartDateTime = this.listQuery.DateTimeRange[0]
+        this.listQuery.EndDateTime = this.listQuery.DateTimeRange[1]
+      } else {
+        this.listQuery.StartDateTime = undefined
+        this.listQuery.EndDateTime = undefined
+      }
+      list(this.listQuery).then(response => {
+        this.list = response.Data.DataList
+        this.listQuery.PageModel.PageCount = response.Data.PageModel.PageCount
 
-        // Just to simulate the time of the request
-        setTimeout(() => {
-          this.listLoading = false
-        }, 1.5 * 1000)
+        this.listLoading = false
       })
     },
     handleFilter() {
-      this.listQuery.page = 1
+      this.listQuery.PageModel.PageIndex = 1
       this.getList()
     },
     sortChange(data) {
       const { prop, order } = data
-      if (prop === 'id') {
-        this.sortByID(order)
-      }
-    },
-    sortByID(order) {
-      if (order === 'ascending') {
-        this.listQuery.sort = '+id'
+      if (order == 'ascending') {
+        this.listQuery.OrderByType = true
       } else {
-        this.listQuery.sort = '-id'
+        this.listQuery.OrderByType = false
       }
+      this.listQuery.SortFileds = prop
       this.handleFilter()
     },
-    resetOrder() {
+    resetForm() {
       this.formTemp = {
         CustomerAccount: '',
-        CustomerAddress: '',
+        CustomerAddress: undefined,
 
         ProductName: '',
 
@@ -345,11 +364,11 @@ export default {
         DistractPrice: 0,
         ProfitPrice: 0,
         SelfPay: 0,
-        Remak: ''
+        Remark: ''
       }
     },
     handleCreate() {
-      this.resetOrder()
+      this.resetForm()
       this.dialogStatus = 'create'
       this.dialogFormVisible = true
       this.$nextTick(() => {
@@ -357,8 +376,6 @@ export default {
       })
     },
     edit_remark(row, remark) {
-      this.isCancelOrder = false
-      this.dialogRemarksFormTitle = '修改备注'
       this.crtRow = row
       this.crtRemark = remark
       this.dialogRemarksFormVisible = true
@@ -368,50 +385,33 @@ export default {
       this.dialogRemarksFormVisible = false
     },
     saveRemark() {
-      if (this.isCancelOrder) {
-        check_in_cancel_order(this.crtRow.Id, this.crtRemark).then(response => {
-          if (response.data.Status == true) {
-            this.$message.success(response.data.Message)
-            this.crtRow.Remarks = response.data.Result.Remarks
-            this.inquire()
-          } else {
-            this.$message.error(response.data.Message)
-          }
-        })
-      } else {
-        check_in_edit_remark(this.crtRow.Id, this.crtRemark).then(response => {
-          if (response.data.Status == true) {
-            this.$message.success(response.data.Message)
-            this.crtRow.Remarks = response.data.Result.Remarks
-          } else {
-            this.$message.error(response.data.Message)
-          }
-        })
-      }
-
+      updateRemark(this.crtRow.Id, this.crtRemark).then(response => {
+        if (response.Code == 0) {
+          this.$message.success(response.Message)
+          this.crtRow.Remark = response.Data
+        } else {
+          this.$message.error(response.Message)
+        }
+      })
       this.dialogRemarksFormVisible = false
     },
     createData() {
       this.$refs['dataForm'].validate(valid => {
         if (valid) {
-          this.formTemp.id = parseInt(Math.random() * 100) + 1024 // mock a id
-          this.formTemp.author = 'vue-element-admin'
-          createArticle(this.formTemp).then(() => {
-            this.list.unshift(this.formTemp)
+          add(this.formTemp).then(response => {
+            if (response.Code == 0) {
+              this.$message.success(response.Message)
+            } else {
+              this.$message.error(response.Message)
+            }
             this.dialogFormVisible = false
-            this.$notify({
-              title: 'Success',
-              message: 'Created Successfully',
-              type: 'success',
-              duration: 2000
-            })
+            this.handleFilter()
           })
         }
       })
     },
     handleUpdate(row) {
       this.formTemp = Object.assign({}, row) // copy obj
-      this.formTemp.timestamp = new Date(this.formTemp.timestamp)
       this.dialogStatus = 'update'
       this.dialogFormVisible = true
       this.$nextTick(() => {
@@ -422,50 +422,27 @@ export default {
       this.$refs['dataForm'].validate(valid => {
         if (valid) {
           const tempData = Object.assign({}, this.formTemp)
-          tempData.timestamp = +new Date(tempData.timestamp) // change Thu Nov 30 2017 16:41:05 GMT+0800 (CST) to 1512031311464
-          updateArticle(tempData).then(() => {
-            const index = this.list.findIndex(v => v.id === this.formTemp.id)
-            this.list.splice(index, 1, this.formTemp)
+          edit(tempData).then(response => {
+            if (response.Code == 0) {
+              this.$message.success(response.Message)
+            } else {
+              this.$message.error(response.Message)
+            }
             this.dialogFormVisible = false
-            this.$notify({
-              title: 'Success',
-              message: 'Update Successfully',
-              type: 'success',
-              duration: 2000
-            })
+            this.handleFilter()
           })
         }
       })
     },
     handleDelete(row, index) {
-      this.$notify({
-        title: 'Success',
-        message: 'Delete Successfully',
-        type: 'success',
-        duration: 2000
+      del(row.Id).then(response => {
+        if (response.Code == 0) {
+          this.$message.success(response.Message)
+        } else {
+          this.$message.error(response.Message)
+        }
+        this.handleFilter()
       })
-      this.list.splice(index, 1)
-    },
-    handleFetchPv(pv) {
-      fetchPv(pv).then(response => {
-        this.pvData = response.data.pvData
-        this.dialogPvVisible = true
-      })
-    },
-    formatJson(filterVal) {
-      return this.list.map(v =>
-        filterVal.map(j => {
-          if (j === 'timestamp') {
-            return parseTime(v[j])
-          } else {
-            return v[j]
-          }
-        })
-      )
-    },
-    getSortClass: function(key) {
-      const sort = this.listQuery.sort
-      return sort === `+${key}` ? 'ascending' : 'descending'
     }
   }
 }

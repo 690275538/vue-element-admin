@@ -25,8 +25,9 @@ module.exports = {
    * Detail: https://cli.vuejs.org/config/#publicpath
    */
   // baseUrl:"my-app", // 默认情况下，Vue CLI 会假设你的应用是被部署在一个域名的根路径上，例如 https://www.my-app.com/。如果应用被部署在一个子路径上，你就需要用这个选项指定这个子路径。例如，如果你的应用被部署在 https://www.my-app.com/my-app/，则设置 baseUrl 为 /my-app/。
-  publicPath: '/',
-  outputDir: 'dist', //生成的生产环境构建文件的目录
+  publicPath: './',
+  // outputDir: 'dist', //生成的生产环境构建文件的目录
+  outputDir: '../OrderWebApplication/WebApplication/wwwroot', //生成的生产环境构建文件的目录
   assetsDir: 'static', //放置生成的静态资源 (js、css、img、fonts) 的 (相对于 outputDir 的) 目录。
   lintOnSave: process.env.NODE_ENV === 'development', // 是否在保存的时候使用 `eslint-loader` 进行检查。 有效的值：`ture` | `false` | `"error"`  当设置为 `"error"` 时，检查出的错误会触发编译失败。
   productionSourceMap: false, //如果你不需要生产环境的 source map，可以将其设置为 false 以加速生产环境构建。
