@@ -141,10 +141,16 @@
           </el-select>
         </el-form-item>
         <el-form-item label="销售价格" prop="SellingPrice">
-          <el-input v-model="formTemp.SellingPrice" />
+          <el-input
+            v-model="formTemp.SellingPrice"
+            @change="formTemp.ProfitPrice=formTemp.SellingPrice-formTemp.DistractPrice"
+          />
         </el-form-item>
         <el-form-item label="转出金额" prop="DistractPrice">
-          <el-input v-model="formTemp.DistractPrice" />
+          <el-input
+            v-model="formTemp.DistractPrice"
+            @change="formTemp.ProfitPrice=formTemp.SellingPrice-formTemp.DistractPrice"
+          />
         </el-form-item>
         <el-form-item label="盈利金额" prop="ProfitPrice">
           <el-input v-model="formTemp.ProfitPrice" />
@@ -371,7 +377,7 @@ export default {
         } else {
           this.$message.error(response.Message)
         }
-        event.dialogVisible = false;
+        event.dialogVisible = false
       })
     },
     createData() {

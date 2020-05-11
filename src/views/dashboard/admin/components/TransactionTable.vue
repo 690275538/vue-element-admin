@@ -1,27 +1,22 @@
 <template>
   <div>
-    <h6 class="text-center">Rank</h6>
-    <el-table :data="list" style="width: 100%;padding-top: 15px;">
-      <el-table-column label="Order_No" min-width="200">
-        <template slot-scope="scope">{{ scope.row.order_no | orderNoFilter }}</template>
+    <el-table :data="list" fit >
+      <el-table-column label="账号">
+        <template slot-scope="scope">{{ scope.row.customerAccount }}</template>
       </el-table-column>
-      <el-table-column label="Price" width="195" align="center">
-        <template slot-scope="scope">¥{{ scope.row.price | toThousandFilter }}</template>
+      <el-table-column label="订单总数" align="center">
+        <template slot-scope="scope">{{ scope.row.orderSum }}</template>
       </el-table-column>
-      <el-table-column label="Status" width="100" align="center">
-        <template slot-scope="{row}">
-          <el-tag :type="row.status | statusFilter">{{ row.status }}</el-tag>
-        </template>
+      <el-table-column label="销售总价" align="center">
+        <template slot-scope="{row}">¥{{row.sumSellingPrice}}</template>
       </el-table-column>
     </el-table>
   </div>
 </template>
 
 <script>
-
-const testData = [
-  {},
-];
+import { rankData } from '@/api/dashboard'
+const testData = [{}]
 
 export default {
   filters: {
@@ -31,9 +26,6 @@ export default {
         pending: 'danger'
       }
       return statusMap[status]
-    },
-    orderNoFilter(str) {
-      return str.substring(0, 30)
     }
   },
   data() {
@@ -46,7 +38,11 @@ export default {
   },
   methods: {
     fetchData() {
-
+      rankData().then(response => {
+        if (response.Code == 0) {
+          this.list = response.Data
+        }
+      })
     }
   }
 }

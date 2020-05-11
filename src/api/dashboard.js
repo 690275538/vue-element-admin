@@ -13,3 +13,10 @@ export function lineData() {
     method: 'get'
   })
 }
+
+export function rankData() {
+  return request({
+    url: '/home/RankData',
+    method: 'get'
+  })
+}
