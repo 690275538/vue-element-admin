@@ -94,7 +94,11 @@
       @pagination="getList"
     />
 
-    <el-dialog :title="textMap[dialogStatus]" :visible.sync="dialogFormVisible">
+    <el-dialog
+      :title="textMap[dialogStatus]"
+      :visible.sync="dialogFormVisible"
+      :close-on-click-modal="false"
+    >
       <el-form
         ref="dataForm"
         :rules="rules"
@@ -142,21 +146,23 @@
         </el-form-item>
         <el-form-item label="销售价格" prop="SellingPrice">
           <el-input
+            type="number"
             v-model="formTemp.SellingPrice"
             @change="formTemp.ProfitPrice=formTemp.SellingPrice-formTemp.DistractPrice"
           />
         </el-form-item>
         <el-form-item label="转出金额" prop="DistractPrice">
           <el-input
+            type="number"
             v-model="formTemp.DistractPrice"
             @change="formTemp.ProfitPrice=formTemp.SellingPrice-formTemp.DistractPrice"
           />
         </el-form-item>
         <el-form-item label="盈利金额" prop="ProfitPrice">
-          <el-input v-model="formTemp.ProfitPrice" />
+          <el-input type="number" v-model="formTemp.ProfitPrice" />
         </el-form-item>
         <el-form-item label="自付金额" prop="SelfPay">
-          <el-input v-model="formTemp.SelfPay" />
+          <el-input type="number" v-model="formTemp.SelfPay" />
         </el-form-item>
         <el-form-item label="备注" prop="Remark">
           <el-input v-model="formTemp.Remark" type="textarea" :rows="2" />
