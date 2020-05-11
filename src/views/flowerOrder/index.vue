@@ -2,20 +2,23 @@
   <div class="app-container">
     <div class="filter-container">
       <el-input
+        class="filter-item"
         v-model="listQuery.CustomerAccount"
         placeholder="客户账号"
         style="width: 200px;"
-        class="filter-item"
         @keyup.enter.native="handleFilter"
+        clearable
       />
       <el-input
+        class="filter-item"
         v-model="listQuery.CustomerAddress"
         placeholder="客户地址"
         style="width: 200px;"
-        class="filter-item"
         @keyup.enter.native="handleFilter"
+        clearable
       />
       <el-date-picker
+        class="filter-item"
         v-model="listQuery.DateTimeRange"
         type="daterange"
         align="right"
@@ -24,7 +27,7 @@
         start-placeholder="开始日期"
         end-placeholder="结束日期"
         :picker-options="pickerOptions"
-      ></el-date-picker>
+      />
       <el-button
         v-waves
         class="filter-item"
@@ -158,7 +161,6 @@
         <el-button type="primary" @click="dialogStatus==='create'?createData():updateData()">提交</el-button>
       </div>
     </el-dialog>
-
   </div>
 </template>
 
