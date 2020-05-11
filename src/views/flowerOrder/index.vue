@@ -11,8 +11,8 @@
       />
       <el-input
         class="filter-item"
-        v-model="listQuery.CustomerAddress"
-        placeholder="客户地址"
+        v-model="listQuery.PartnerAddress"
+        placeholder="合作商地址"
         style="width: 200px;"
         @keyup.enter.native="handleFilter"
         clearable
@@ -27,6 +27,7 @@
         start-placeholder="开始日期"
         end-placeholder="结束日期"
         :picker-options="pickerOptions"
+        clearable
       />
       <el-button
         v-waves
@@ -254,7 +255,7 @@ export default {
           PageCount: 0
         },
         CustomerAccount: '',
-        CustomerAddress: '',
+        PartnerAddress: '',
 
         SortFileds: 'Id',
         IsAsc: true
@@ -266,7 +267,7 @@ export default {
       formTemp: {
         Order: {
           CustomerAccount: '',
-          CustomerAddress: '',
+          PartnerAddress: '',
 
           ProductName: '',
 
@@ -349,7 +350,7 @@ export default {
     resetForm() {
       this.formTemp = {
         CustomerAccount: '',
-        CustomerAddress: undefined,
+        PartnerAddress: undefined,
 
         ProductName: '',
 
