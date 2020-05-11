@@ -72,21 +72,13 @@
       <el-table-column label="自付金额" prop="SelfPay" align="center" width="80" />
       <el-table-column label="备注" width="50px" align="left">
         <template slot-scope="{row}">
-          <el-tooltip :disabled="row.Remark==null||row.Remark==''" placement="top">
-            <div slot="content">{{ row.Remark }}</div>
-            <el-button
-              :type="row.Remark?'danger':'primary'"
-              style="padding: 5px 7px;"
-              size="mini"
-              @click="edit_remark(row,row.Remark)"
-            >注</el-button>
-          </el-tooltip>
+          <remark :remark="row.Remark" @saveRemark="saveRemark($event,row)" />
         </template>
       </el-table-column>
       <el-table-column label="操作" align="center" width="200" class-name="small-padding fixed-width">
         <template slot-scope="{row,$index}">
           <el-button type="primary" size="mini" @click="handleUpdate(row)">编辑</el-button>
-          <el-button size="mini" type="danger" @click="handleDelete(row,$index)">删除</el-button>
+          <el-button size="mini" type="danger" @click="handleDelete(row)">删除</el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -167,18 +159,12 @@
       </div>
     </el-dialog>
 
-    <el-dialog :visible.sync="dialogRemarksFormVisible" title="修改备注" width="30%">
-      <el-input v-model="crtRemark" type="textarea" :rows="2" />
-      <span slot="footer" class="dialog-footer">
-        <el-button @click="dialogRemarksFormVisible = false">取消</el-button>
-        <el-button type="primary" @click="saveRemark()">提交</el-button>
-      </span>
-    </el-dialog>
   </div>
 </template>
 
 <script>
 import { add, edit, list, del, updateRemark, single } from '@/api/flowerOrder'
+import Remark from '@/views/components/remark'
 import waves from '@/directive/waves' // waves directive
 import { parseTime } from '@/utils'
 import Pagination from '@/components/Pagination' // secondary package based on el-pagination
@@ -228,7 +214,7 @@ const chatToolOptions = [
 
 export default {
   name: 'FlowerOrder',
-  components: { Pagination },
+  components: { Pagination, Remark },
   directives: { waves },
   filters: {
     chatToolFilter(key) {
@@ -284,7 +270,6 @@ export default {
         }
       },
       dialogFormVisible: false,
-      dialogRemarksFormVisible: false,
       dialogStatus: '',
       crtRemark: '',
       crtRow: undefined,
@@ -375,25 +360,17 @@ export default {
         this.$refs['dataForm'].clearValidate()
       })
     },
-    edit_remark(row, remark) {
-      this.crtRow = row
-      this.crtRemark = remark
-      this.dialogRemarksFormVisible = true
-    },
-    resetRemark() {
-      this.crtRemark = ''
-      this.dialogRemarksFormVisible = false
-    },
-    saveRemark() {
-      updateRemark(this.crtRow.Id, this.crtRemark).then(response => {
+    saveRemark(event, row) {
+      // event 是 自定义 remark 事件传过来的
+      updateRemark(row.Id, event.crtRemark).then(response => {
         if (response.Code == 0) {
           this.$message.success(response.Message)
-          this.crtRow.Remark = response.Data
+          row.Remark = response.Data
         } else {
           this.$message.error(response.Message)
         }
+        event.dialogVisible = false;
       })
-      this.dialogRemarksFormVisible = false
     },
     createData() {
       this.$refs['dataForm'].validate(valid => {
@@ -434,7 +411,7 @@ export default {
         }
       })
     },
-    handleDelete(row, index) {
+    handleDelete(row) {
       del(row.Id).then(response => {
         if (response.Code == 0) {
           this.$message.success(response.Message)
