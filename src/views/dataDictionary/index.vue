@@ -37,7 +37,7 @@
         style="margin-left: 10px;"
         type="primary"
         icon="el-icon-edit"
-        @click="handleCreate"
+        @click="handleCreate()"
       >添加</el-button>
     </div>
 
@@ -50,11 +50,36 @@
       highlight-current-row
       style="width: 100%;"
       @sort-change="sortChange"
+
+      row-key="Id"
+      lazy
+      :load="loadTree"
+      :tree-props="{children: 'Children', hasChildren: 'HasChildren'}"
     >
+      <!--  row-key="Id" 对应data list里面 的 Id -->
       <el-table-column label="序号" type="index" align="center" width="50"></el-table-column>
-      <el-table-column label="Id" prop="Id" />
+      <el-table-column label="标题" prop="Label" />
+      <el-table-column label="Id" width="300">
+        <template slot-scope="{row}">
+          <el-button
+            type="info"
+            effect="dark"
+            size="mini"
+            @click="handleClipboard(row.Id,$event)"
+          >{{row.Id}}</el-button>
+        </template>
+      </el-table-column>
+      <el-table-column label="ParentId" width="300">
+        <template slot-scope="{row}" v-if="row.ParentId">
+          <el-button
+            type="info"
+            effect="dark"
+            size="mini"
+            @click="handleClipboard(row.ParentId,$event)"
+          >{{row.ParentId}}</el-button>
+        </template>
+      </el-table-column>
       <el-table-column label="值" prop="Value" />
-      <el-table-column label="文本" prop="Label" />
       <el-table-column label="排序" prop="Sort" />
       <el-table-column label="是否禁用" prop="Disabled" width="120">
         <template slot-scope="{row}">
@@ -67,10 +92,12 @@
         </template>
       </el-table-column>
       <el-table-column>
-        <template slot-scope="{row,$index}">
-          <el-button type="primary" size="mini" @click="handleUpdate(row)">添加</el-button>
-          <el-button type="primary" size="mini" @click="handleUpdate(row)">编辑</el-button>
-          <el-button size="mini" type="danger" @click="handleDelete(row)">删除</el-button>
+        <template slot-scope="{row}">
+          <el-button-group>
+            <el-button type="primary" size="mini" @click="handleCreate(row.Id)">添加</el-button>
+            <el-button type="primary" size="mini" @click="handleUpdate(row)">编辑</el-button>
+            <el-button size="mini" type="danger" @click="handleDelete(row)">删除</el-button>
+          </el-button-group>
         </template>
       </el-table-column>
     </el-table>
@@ -111,7 +138,15 @@
 </template>
 
 <script>
-import { add, edit, list, del, single, updateDisabledStatus } from '@/api/dataDictionary'
+import {
+  add,
+  edit,
+  list,
+  del,
+  single,
+  updateDisabledStatus
+} from '@/api/dataDictionary'
+import clipboard from '@/utils/clipboard'
 import waves from '@/directive/waves' // waves directive
 import { parseTime } from '@/utils'
 import Pagination from '@/components/Pagination' // secondary package based on el-pagination
@@ -121,13 +156,12 @@ export default {
   components: { Pagination },
   directives: { waves },
   filters: {
-    chatToolFilter(key) {
-    }
+    chatToolFilter(key) {}
   },
   data() {
     return {
       tableKey: 0,
-      list: null,
+      list: [],
       listLoading: false,
       listQuery: {
         StartDateTime: undefined,
@@ -138,7 +172,8 @@ export default {
           PageSize: 10,
           PageCount: 0
         },
-        Id: '',
+        Id: undefined,
+        ParentId: undefined,
         Value: '',
         Label: '',
 
@@ -146,10 +181,11 @@ export default {
         IsAsc: true
       },
       formTemp: {
+        ParentId: undefined,
         Value: '',
         Label: '',
         Sort: 0,
-        Disabled: false,
+        Disabled: false
       },
       dialogFormVisible: false,
       dialogStatus: '',
@@ -158,10 +194,7 @@ export default {
         create: '添加'
       },
       rules: {
-        Label: [
-          { required: true, message: '不能为空', trigger: 'change' }
-        ],
-
+        Label: [{ required: true, message: '不能为空', trigger: 'change' }]
       }
     }
   },
@@ -204,16 +237,18 @@ export default {
     },
     resetForm() {
       this.formTemp = {
+        ParentId: undefined,
         Value: '',
         Label: '',
         Sort: 0,
-        Disabled: false,
+        Disabled: false
       }
     },
-    handleCreate() {
+    handleCreate(parentId) {
       this.resetForm()
       this.dialogStatus = 'create'
       this.dialogFormVisible = true
+      this.formTemp.ParentId = parentId
       this.$nextTick(() => {
         this.$refs['dataForm'].clearValidate()
       })
@@ -276,6 +311,17 @@ export default {
         }
         this.handleFilter()
       })
+    },
+    loadTree(tree, treeNode, resolve) {
+      this.listQuery.PageModel.PageSize = 99999
+      this.listQuery.ParentId = tree.Id
+      list(this.listQuery).then(response => {
+        const dataList=response.Data.DataList;
+        resolve(dataList)
+      })
+    },
+    handleClipboard(text, event) {
+      clipboard(text, event)
     }
   }
 }

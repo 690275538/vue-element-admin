@@ -241,7 +241,7 @@ export default {
   data() {
     return {
       tableKey: 0,
-      list: null,
+      list: [],
       listLoading: false,
       pickerOptions,
       chatToolOptions,
