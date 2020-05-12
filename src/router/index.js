@@ -10,6 +10,7 @@ import Layout from '@/layout'
 import componentsRouter from './modules/components'
 // import chartsRouter from './modules/charts'
 import orderRouter from './modules/order'
+import baseDataRouter from './modules/baseData'
 
 /**
  * Note: sub-menu only appear when route children.length >= 1
@@ -135,6 +136,7 @@ export const asyncRoutes = [
   componentsRouter,
   // chartsRouter,
 
+  baseDataRouter,
   // 404 page must be placed at the end !!!
   {
     path: '*',

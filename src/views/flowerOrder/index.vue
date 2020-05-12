@@ -12,7 +12,7 @@
       <el-input
         class="filter-item"
         v-model="listQuery.PartnerAddress"
-        placeholder="合作商地址"
+        placeholder="合作商地址" 
         style="width: 200px;"
         @keyup.enter.native="handleFilter"
         clearable
@@ -57,7 +57,7 @@
     >
       <el-table-column label="序号" type="index" align="center" width="50"></el-table-column>
       <el-table-column label="客户账号" prop="CustomerAccount" />
-      <el-table-column label="创建时间" width="120" align="center">
+      <el-table-column label="创建时间" width="120" align="center" sortable="custom" prop="CreateDate">
         <template slot-scope="{row}">
           <span>{{ row.CreateDate | parseTime('{y}-{m}-{d}') }}</span>
         </template>
@@ -257,13 +257,9 @@ export default {
         CustomerAccount: '',
         PartnerAddress: '',
 
-        SortFileds: 'Id',
+        SortFileds: 'CreateDate',
         IsAsc: true
       },
-      sortOptions: [
-        { label: 'ID Ascending', key: '+id' },
-        { label: 'ID Descending', key: '-id' }
-      ],
       formTemp: {
         Order: {
           CustomerAccount: '',
@@ -286,8 +282,6 @@ export default {
       },
       dialogFormVisible: false,
       dialogStatus: '',
-      crtRemark: '',
-      crtRow: undefined,
       textMap: {
         update: '编辑',
         create: '添加'
