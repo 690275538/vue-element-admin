@@ -8,8 +8,7 @@
         size="mini"
         @click="edit_remark()"
       >
-        <template v-if="title&&title.length">{{title}}</template>
-        <template v-else>注</template>
+        <template>{{title}}</template>
       </el-button>
     </el-tooltip>
 
@@ -26,10 +25,13 @@
 <script>
 export default {
   name: 'Remark',
-  props: [
-    'title',
-    'remark',
-  ],
+  props: {
+    title: {
+      type: String,
+      default: "注"//默认值
+    },
+    remark
+  },
   data() {
     return {
       crtRemark: this.remark,
