@@ -11,13 +11,21 @@ const baseDataRouter = {
     title: 'BaseData',
     icon: 'chart'
   },
-  children: [
-    {
+  children: [{
       path: 'dataDictionary',
       component: () => import('@/views/dataDictionary/index'),
       name: 'DataDictionary',
       meta: {
         title: 'DataDictionary',
+        noCache: true
+      }
+    },
+    {
+      path: 'common',
+      component: () => import('@/views/common/index'),
+      name: 'Common',
+      meta: {
+        title: 'Common',
         noCache: true
       }
     }

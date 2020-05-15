@@ -36,7 +36,7 @@ module.exports = {
     //这会告诉开发服务器将任何未知请求 (没有匹配到静态文件的请求) 代理到http://localhost:5000
     proxy: {
       "/api": {
-        target: 'http://localhost:5100', //请求到 /api/users 现在会被代理到请求 http://localhost:3000/api/users。
+        target: defaultSettings.proxyTarget, //请求到 /api/users 现在会被代理到请求 http://localhost:5100/api/users。
         // pathRewrite: { "^/api": "" },//如果你不想始终传递 /api ，则需要重写路径
         changeOrigin: true, //changes the origin of the host header to the target URL
         secure: false //默认情况下，不接受运行在 HTTPS 上，且使用了无效证书的后端服务器。如果你想要接受，修改配置
