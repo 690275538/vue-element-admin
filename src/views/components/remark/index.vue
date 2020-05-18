@@ -28,9 +28,11 @@ export default {
   props: {
     title: {
       type: String,
-      default: "注"//默认值
+      default: '注' //默认值
     },
-    remark
+    remark: {
+      type: String
+    }
   },
   data() {
     return {
@@ -38,9 +40,7 @@ export default {
       dialogVisible: false
     }
   },
-  created() {
-
-  },
+  created() {},
   methods: {
     edit_remark() {
       this.dialogVisible = true
@@ -51,8 +51,8 @@ export default {
     },
     saveRemark() {
       this.$emit('saveRemark', this)
-    },
-  },
+    }
+  }
 }
 </script>
 

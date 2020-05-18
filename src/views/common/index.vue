@@ -1,18 +1,27 @@
 <template>
   <div class="mixin-components-container">
-    <el-row :gutter="20" style="margin-top:50px;">
+    <el-row :gutter="20" style="margin-top:20px;">
       <el-col :span="6">
         <el-card class="box-card">
           <div slot="header" class="clearfix">
-            <span>Material Design 的input</span>
+            <span>Material Design 的 input</span>
           </div>
-          <div style="height:100px;">
-            <dropzone
-              id="myVueDropzone"
-              :options="dropzoneImportCityOptions"
-              @dropzone-removedFile="dropzoneR"
-              @dropzone-success="dropzoneS"
-            />
+          <div class="component-item">
+            <el-upload
+              class="upload-demo"
+              drag
+              :action="url"
+              :headers="headers"
+              :on-success="handleUploadSuccess"
+              :on-error="handleUploadError"
+            >
+              <i class="el-icon-upload"></i>
+              <div class="el-upload__text">
+                将文件拖到此处，或
+                <em>点击上传</em>
+              </div>
+              <div class="el-upload__tip" slot="tip">只能上传jpg/png文件，且不超过500kb</div>
+            </el-upload>
           </div>
         </el-card>
       </el-col>
@@ -55,11 +64,9 @@
 
 <script>
 import waves from '@/directive/waves/index.js' // 水波纹指令
-import Dropzone from '@/components/Dropzone'//拖拽上传
+import Dropzone from '@/components/Dropzone' //拖拽上传
 import { importCity, importHistoryOrder } from '@/api/common'
-import {
-  getToken
-} from '@/utils/auth'
+import { getToken } from '@/utils/auth'
 import defaultSettings from '@/settings'
 
 const dropzoneImportCityOptions = {
@@ -77,23 +84,24 @@ export default {
   },
   data() {
     return {
-      dropzoneImportCityOptions,
+      url: dropzoneImportCityOptions.url,
+      headers: dropzoneImportCityOptions.headers,
       demo: {
         title: ''
-      },
+      }
     }
   },
-  mounted() {
-  },
+  mounted() {},
   methods: {
-    dropzoneS(file) {
+    handleUploadSuccess(response, file, fileList) {
+      console.log(response)
       console.log(file)
-      this.$message({ message: 'Upload success', type: 'success' })
+      console.log(fileList)
     },
-    dropzoneR(file) {
-      console.log(file)
-      this.$message({ message: 'Delete success', type: 'success' })
-    }
+    handleUploadError(response, file, fileList) {
+      console.log(response)
+      this.$message.error(response.message)
+    },
   }
 }
 </script>
@@ -101,10 +109,10 @@ export default {
 <style scoped>
 .mixin-components-container {
   background-color: #f0f2f5;
-  padding: 30px;
+  padding: 20px;
   min-height: calc(100vh - 84px);
 }
 .component-item {
-  min-height: 100px;
+  height: 200px;
 }
 </style>

@@ -3,7 +3,7 @@
     <div class="filter-container">
       <el-input
         class="filter-item"
-        v-model="listQuery.CustomerAccount"
+        v-model.trim="listQuery.CustomerAccount"
         placeholder="客户账号"
         style="width: 200px;"
         @keyup.enter.native="handleFilter"
@@ -11,8 +11,16 @@
       />
       <el-input
         class="filter-item"
-        v-model="listQuery.PartnerAddress"
-        placeholder="合作商地址" 
+        v-model.trim="listQuery.ProductName"
+        placeholder="商品名称"
+        style="width: 200px;"
+        @keyup.enter.native="handleFilter"
+        clearable
+      />
+      <el-input
+        class="filter-item"
+        v-model.trim="listQuery.PartnerAddress"
+        placeholder="合作商地址"
         style="width: 200px;"
         @keyup.enter.native="handleFilter"
         clearable
@@ -62,7 +70,7 @@
           <span>{{ row.CreateDate | parseTime('{y}-{m}-{d}') }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="产品名称" prop="ProductName" />
+      <el-table-column label="商品名称" prop="ProductName" />
       <el-table-column label="合作商" prop="PartnerName" />
       <el-table-column label="合作商地址" prop="PartnerAddress" />
       <el-table-column label="合作商聊天工具" prop="PartnerChatTool" width="120">
@@ -256,9 +264,10 @@ export default {
         },
         CustomerAccount: '',
         PartnerAddress: '',
+        ProductName: '',
 
         SortFileds: 'CreateDate',
-        IsAsc: true
+        IsAsc: false
       },
       formTemp: {
         Order: {
@@ -333,11 +342,7 @@ export default {
     },
     sortChange(data) {
       const { prop, order } = data
-      if (order == 'ascending') {
-        this.listQuery.OrderByType = true
-      } else {
-        this.listQuery.OrderByType = false
-      }
+      this.listQuery.IsAsc = order == 'ascending'
       this.listQuery.SortFileds = prop
       this.handleFilter()
     },
