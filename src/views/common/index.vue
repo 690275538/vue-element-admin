@@ -14,6 +14,7 @@
               :headers="headers"
               :on-success="handleUploadSuccess"
               :on-error="handleUploadError"
+              with-credentials
             >
               <i class="el-icon-upload"></i>
               <div class="el-upload__text">
@@ -101,7 +102,7 @@ export default {
     handleUploadError(response, file, fileList) {
       console.log(response)
       this.$message.error(response.message)
-    },
+    }
   }
 }
 </script>

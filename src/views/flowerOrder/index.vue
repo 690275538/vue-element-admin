@@ -78,10 +78,34 @@
           <span>{{ row.PartnerChatTool | chatToolFilter }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="销售金额" prop="SellingPrice" align="center" width="80" />
-      <el-table-column label="转出金额" prop="DistractPrice" align="center" width="80" />
-      <el-table-column label="盈利金额" prop="ProfitPrice" align="center" width="80" />
-      <el-table-column label="自付金额" prop="SelfPay" align="center" width="80" />
+      <el-table-column prop="SellingPrice" align="center" width="0">
+        <template slot="header" slot-scope="scope">
+          销售金额
+          <br />
+          <span style="color:#ff0000">({{QueryStatistics.SellingPrice||''}})</span>
+        </template>
+      </el-table-column>
+      <el-table-column prop="DistractPrice" align="center" width="80">
+        <template slot="header" slot-scope="scope">
+          转出金额
+          <br />
+          <span style="color:#ff0000">({{QueryStatistics.DistractPrice||''}})</span>
+        </template>
+      </el-table-column>
+      <el-table-column prop="ProfitPrice" align="center" width="80">
+        <template slot="header" slot-scope="scope">
+          盈利金额
+          <br />
+          <span style="color:#ff0000">({{QueryStatistics.ProfitPrice||''}})</span>
+        </template>
+      </el-table-column>
+      <el-table-column prop="SelfPay" align="center" width="80">
+        <template slot="header" slot-scope="scope">
+          自付金额
+          <br />
+          <span style="color:#ff0000">({{QueryStatistics.SelfPay||''}})</span>
+        </template>
+      </el-table-column>
       <el-table-column label="备注" width="50px" align="left">
         <template slot-scope="{row}">
           <remark :remark="row.Remark" @saveRemark="saveRemark($event,row)" />
@@ -253,6 +277,7 @@ export default {
       listLoading: false,
       pickerOptions,
       chatToolOptions,
+      QueryStatistics: {},
       listQuery: {
         StartDateTime: undefined,
         EndDateTime: undefined,
@@ -332,7 +357,7 @@ export default {
       list(this.listQuery).then(response => {
         this.list = response.Data.DataList
         this.listQuery.PageModel.PageCount = response.Data.PageModel.PageCount
-
+        this.QueryStatistics = response.Data.QueryStatistics
         this.listLoading = false
       })
     },
